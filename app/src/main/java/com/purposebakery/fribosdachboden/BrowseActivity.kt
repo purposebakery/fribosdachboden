@@ -3,10 +3,12 @@ package com.purposebakery.fribosdachboden
 import android.Manifest
 import android.app.DownloadManager
 import android.content.Context
+import android.content.DialogInterface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.support.design.widget.Snackbar
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.AppCompatImageView
 import android.support.v7.widget.AppCompatTextView
@@ -16,21 +18,22 @@ import android.widget.BaseAdapter
 import android.widget.Switch
 import com.purposebakery.fribosdachboden.data.Data
 import com.purposebakery.fribosdachboden.data.Video
+import com.purposebakery.fribosdachboden.generic.BaseActivity
 import com.purposebakery.fribosdachboden.store.Preferences
 import com.sembozdemir.permissionskt.askPermissions
 import com.sembozdemir.permissionskt.handlePermissionsResult
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.browse_activity.*
-import kotlinx.android.synthetic.main.main_activity.*
+import kotlinx.android.synthetic.main.content_browse.*
 
-class BrowseActivity : AppCompatActivity() {
+class BrowseActivity : BaseActivity () {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.main_activity)
+        setContentView(R.layout.browse_activity)
 
         setSupportActionBar(toolbar)
-        fab.setOnClickListener { view ->
+        downloadAll.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                     .setAction("Action", null).show()
         }
@@ -47,20 +50,29 @@ class BrowseActivity : AppCompatActivity() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.main, menu)
-
-        menu.findItem(R.id.menu_high_quality).actionView.findViewById<Switch>(R.id.menu_high_quality).isChecked = Preferences.getQuality() == Preferences.Companion.Quality.HD
+        menuInflater.inflate(R.menu.menu_browse, menu)
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menu_high_quality -> {
-                if (item.actionView.findViewById<Switch>(R.id.menu_high_quality).isChecked) {
-                    Preferences.setQuality(Preferences.Companion.Quality.HD)
-                } else {
-                    Preferences.setQuality(Preferences.Companion.Quality.MOBILE)
+            R.id.menu_quality_item -> {
+                val builder = AlertDialog.Builder(this)
+                builder.setTitle(R.string.dialog_quality_title)
+                builder.setMessage(R.string.dialog_quality_message)
+                builder.setPositiveButton(R.string.dialog_quality_hd) { _, _ ->
+                    run {
+                        Preferences.setQuality(Preferences.Companion.Quality.HD)
+                        Snackbar.make(rootView, R.string.dialog_quality_result_message_hd, Snackbar.LENGTH_SHORT).show()
+                    }
                 }
+                builder.setNeutralButton(R.string.dialog_quality_mobile) { _, _ ->
+                    run {
+                        Preferences.setQuality(Preferences.Companion.Quality.MOBILE)
+                        Snackbar.make(rootView, R.string.dialog_quality_result_message_mobile, Snackbar.LENGTH_SHORT).show()
+                    }
+                }
+                builder.show()
                 return true
             }
             else -> return super.onOptionsItemSelected(item)

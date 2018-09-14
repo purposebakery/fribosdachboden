@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.purposebakery.fribosdachboden">
+    package="com.purposebakery.fribosdachboden"
+    android:installLocation="preferExternal">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -19,7 +20,7 @@
 
         <activity
             android:name=".BrowseActivity"
-            android:label="@string/title_activity_browse"
+            android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
