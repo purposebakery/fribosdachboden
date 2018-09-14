@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:background="@color/white"
+    android:elevation="4dp">
+
+    <ImageView
+        android:id="@+id/videoImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"/>
+
+    <LinearLayout
+        app:layout_constraintTop_toBottomOf="@id/videoImage"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:padding="@dimen/margin"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/videoTitle"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Title"/>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/downloadHd"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_half"
+            android:drawableLeft="@drawable/ic_file_download_36dp"
+            android:drawableStart="@drawable/ic_file_download_36dp"
+            android:text="@string/main_download"
+            android:gravity="start|center_vertical"
+            android:background="?android:attr/selectableItemBackground" />
+
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
