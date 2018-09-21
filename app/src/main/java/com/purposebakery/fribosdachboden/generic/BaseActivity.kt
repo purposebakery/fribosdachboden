@@ -1,9 +1,9 @@
 package com.purposebakery.fribosdachboden.generic
 
 import android.annotation.SuppressLint
+import android.content.ContextWrapper
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.content.ContextWrapper
 import com.pixplicity.easyprefs.library.Prefs
 
 @SuppressLint("Registered")

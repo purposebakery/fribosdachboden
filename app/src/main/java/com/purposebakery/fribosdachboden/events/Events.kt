@@ -1,0 +1,3 @@
+package com.purposebakery.fribosdachboden.events
+
+class VideoDownloadChangedEvent

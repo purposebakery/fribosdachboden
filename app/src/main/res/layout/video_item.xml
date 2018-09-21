@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="@dimen/video_item_width"
+    android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
@@ -24,7 +24,7 @@
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/videoTitle"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
             android:layout_width="wrap_content"
@@ -32,16 +32,39 @@
             tools:text="Title"/>
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/downloadHd"
+            android:id="@+id/download"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_half"
-            android:drawableLeft="@drawable/ic_file_download_36dp"
-            android:drawableStart="@drawable/ic_file_download_36dp"
+            android:drawableLeft="@drawable/ic_file_download_black_24dp"
+            android:drawableStart="@drawable/ic_file_download_black_24dp"
             android:text="@string/main_download"
+            android:textSize="12sp"
             android:gravity="start|center_vertical"
             android:background="?android:attr/selectableItemBackground" />
 
+        <LinearLayout
+            android:id="@+id/downloadProgress"
+            android:layout_width="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_height="wrap_content">
+
+            <ProgressBar
+
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginRight="@dimen/margin"/>
+
+            <android.support.v7.widget.AppCompatTextView
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/main_download_progress"
+                />
+        </LinearLayout>
 
     </LinearLayout>
 

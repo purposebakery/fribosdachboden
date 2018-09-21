@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Fribos Dachboden</string>
 
-    <string name="main_download">Herunterladen</string>
+    <string name="main_download">Download</string>
+    <string name="main_download_progress">Download läuft…</string>
 
-    <string name="menu_quality">Qualität</string>
+    <string name="menu_quality">Qualität wählen</string>
 
     <string name="dialog_quality_title">Video qualität</string>
     <string name="dialog_quality_message">In welcher qualität sollen die Videos heruntergeladen werden?\nMobile: ca. 100 MB\nHD: ca. 300 MB\npro Video.</string>
