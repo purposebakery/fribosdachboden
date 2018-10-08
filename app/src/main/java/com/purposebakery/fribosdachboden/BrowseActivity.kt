@@ -2,6 +2,7 @@ package com.purposebakery.fribosdachboden
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.graphics.Point
 import android.graphics.Rect
 import android.os.Bundle
@@ -15,10 +16,10 @@ import com.purposebakery.fribosdachboden.data.Video
 import com.purposebakery.fribosdachboden.events.VideoDownloadChangedEvent
 import com.purposebakery.fribosdachboden.generic.BaseActivity
 import com.purposebakery.fribosdachboden.store.Preferences
+import com.purposebakery.fribosdachboden.utils.downloadMultipleDialog
 import com.purposebakery.fribosdachboden.utils.downloadVideo
 import com.purposebakery.fribosdachboden.utils.initVideoFileDownloadedReceiver
 import com.purposebakery.fribosdachboden.utils.videoFileBeingDownloaded
-import com.purposebakery.fribosdachboden.utils.videoFileDownloaded
 import com.sembozdemir.permissionskt.askPermissions
 import com.sembozdemir.permissionskt.handlePermissionsResult
 import com.squareup.picasso.Picasso
@@ -38,9 +39,9 @@ class BrowseActivity : BaseActivity() {
 
         setSupportActionBar(toolbar)
         downloadAll.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            downloadMultipleDialog(this)
         }
+        updateDownloadAllVisibility()
 
         initGallery()
 
@@ -55,6 +56,14 @@ class BrowseActivity : BaseActivity() {
         }
 
         initVideoFileDownloadedReceiver(this)
+    }
+
+    private fun updateDownloadAllVisibility() {
+        if (Preferences.getDownloadLocked()) {
+            downloadAll.visibility = View.GONE
+        } else {
+            downloadAll.visibility = View.VISIBLE
+        }
     }
 
     private fun initGallery() {
@@ -81,36 +90,77 @@ class BrowseActivity : BaseActivity() {
         load()
     }
 
+    private fun updateDownloadLockedMenuItem(item: MenuItem) {
+        if (Preferences.getDownloadLocked()) {
+            item.setTitle(R.string.menu_download_unlock)
+        } else {
+            item.setTitle(R.string.menu_download_lock)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_browse, menu)
+
+        updateDownloadLockedMenuItem(menu.findItem(R.id.menu_download_lock_item))
+
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
+        return when (item.itemId) {
             R.id.menu_quality_item -> {
-                val builder = AlertDialog.Builder(this)
-                builder.setTitle(R.string.dialog_quality_title)
-                builder.setMessage(R.string.dialog_quality_message)
-                builder.setPositiveButton(R.string.dialog_quality_hd) { _, _ ->
-                    run {
-                        Preferences.setQuality(Preferences.Companion.Quality.HD)
-                        Snackbar.make(rootView, R.string.dialog_quality_result_message_hd, Snackbar.LENGTH_LONG).show()
-                        load()
-                    }
-                }
-                builder.setNegativeButton(R.string.dialog_quality_mobile) { _, _ ->
-                    run {
-                        Preferences.setQuality(Preferences.Companion.Quality.MOBILE)
-                        Snackbar.make(rootView, R.string.dialog_quality_result_message_mobile, Snackbar.LENGTH_LONG).show()
-                        load()
-                    }
-                }
-                builder.show()
-                return true
+                menuQuality()
+                true
             }
-            else -> return super.onOptionsItemSelected(item)
+            R.id.menu_download_lock_item -> {
+                menuDownloadLock(item)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun menuQuality() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(R.string.dialog_quality_title)
+        builder.setMessage(R.string.dialog_quality_message)
+        builder.setPositiveButton(R.string.dialog_quality_hd) { _, _ ->
+            run {
+                Preferences.setQuality(Preferences.Companion.Quality.HD)
+                Snackbar.make(rootView, R.string.dialog_quality_result_message_hd, Snackbar.LENGTH_LONG).show()
+                load()
+            }
+        }
+        builder.setNegativeButton(R.string.dialog_quality_mobile) { _, _ ->
+            run {
+                Preferences.setQuality(Preferences.Companion.Quality.MOBILE)
+                Snackbar.make(rootView, R.string.dialog_quality_result_message_mobile, Snackbar.LENGTH_LONG).show()
+                load()
+            }
+        }
+        builder.show()
+    }
+
+
+    private fun menuDownloadLock(menuItem: MenuItem) {
+        val downloadLocked = Preferences.getDownloadLocked()
+
+        val builder = AlertDialog.Builder(this)
+        if (downloadLocked) {
+            builder.setTitle(R.string.dialog_download_unlock_message)
+        } else {
+            builder.setTitle(R.string.dialog_download_lock_message)
+        }
+        builder.setPositiveButton(R.string.generic_yes) { _, _ ->
+            run {
+                Preferences.setDownloadLocked(!downloadLocked)
+                updateDownloadLockedMenuItem(menuItem)
+                updateDownloadAllVisibility()
+                load()
+            }
+        }
+        builder.setNegativeButton(R.string.generic_no, null)
+        builder.show()
     }
 
     private fun load() {
@@ -200,18 +250,28 @@ class ImageAdapter(private val items: ArrayList<Video>, private val context: Con
         holder.videoTitle.text = video.title
         Picasso.get().load(video.thumbnailUrl).into(holder.videoImage)
 
+        holder.downloadProgress.visibility = View.GONE
+
+        holder.download.visibility = View.GONE
         holder.download.setOnClickListener { run { downloadVideo(video, context) } }
 
-        if (videoFileDownloaded(context, video)) {
-            holder.download.visibility = View.GONE
-            holder.downloadProgress.visibility = View.GONE
-        } else if (videoFileBeingDownloaded(context, video))  {
-            holder.download.visibility = View.GONE
+        holder.videoImage.setOnClickListener { run { playVideo(video) } }
+
+        if (videoFileBeingDownloaded(context, video))  {
             holder.downloadProgress.visibility = View.VISIBLE
-        } else{
-            holder.download.visibility = View.VISIBLE
-            holder.downloadProgress.visibility = View.GONE
+        } else if (!video.isVideoFileDownloaded(context)) {
+            if (Preferences.getDownloadLocked()) {
+                holder.download.visibility = View.GONE
+            } else {
+                holder.download.visibility = View.VISIBLE
+            }
         }
+    }
+
+    private fun playVideo(video : Video) {
+        val intent = Intent(context, VideoActivity::class.java)
+        intent.putExtra(VideoActivity.EXTRA_VIDEO, video)
+        context.startActivity(intent)
     }
 }
 

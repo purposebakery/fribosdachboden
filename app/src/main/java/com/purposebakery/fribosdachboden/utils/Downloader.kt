@@ -1,22 +1,19 @@
 package com.purposebakery.fribosdachboden.utils
 
+import android.app.AlertDialog
 import android.app.DownloadManager
-import android.content.Context
-import android.content.IntentFilter
-import android.net.Uri
+import android.content.*
 import android.os.Environment
-import android.util.Log
+import android.widget.Toast
 import com.purposebakery.fribosdachboden.R
+import com.purposebakery.fribosdachboden.data.Data
 import com.purposebakery.fribosdachboden.data.Video
 import com.purposebakery.fribosdachboden.store.Preferences
-import java.io.File
-import android.content.Intent
-import android.content.BroadcastReceiver
 import com.purposebakery.fribosdachboden.events.VideoDownloadChangedEvent
 import org.greenrobot.eventbus.EventBus
 
 fun initVideoFileDownloadedReceiver(context: Context) {
-    context.registerReceiver(onComplete,  IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    context.registerReceiver(onComplete,  IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE))
 
 }
 
@@ -26,28 +23,50 @@ private var onComplete: BroadcastReceiver = object : BroadcastReceiver() {
     }
 }
 
-fun downloadVideo(video: Video, context: Context) {
-    val uri = getVideoUri(video)
+fun downloadMultipleDialog(context: Context) {
+    val builder = AlertDialog.Builder(context)
+    builder.setTitle(R.string.downloader_download_multiple_dialog_title)
+    builder.setMessage(R.string.downloader_download_multiple_dialog_message)
+    builder.setPositiveButton(R.string.downloader_download_multiple_dialog_5) { _: DialogInterface, _: Int -> run { downloadMultiple(5, context)}}
+    builder.setNegativeButton(R.string.downloader_download_multiple_dialog_10) { _: DialogInterface, _: Int -> run { downloadMultiple(10, context)}}
+    builder.show()
+}
 
+
+fun downloadMultiple(amount : Int, context: Context) {
+    var count = 0
+
+    for (video in Data.getVideos(context)) {
+        if (count == amount) {
+            break
+        } else if (video.isVideoFileDownloaded(context) || videoFileBeingDownloaded(context, video)) {
+            continue
+        } else {
+            count++
+            downloadVideo(video, context)
+        }
+    }
+
+    if (count == 0) {
+        Toast.makeText(context, R.string.downloader_download_multiple_none_left, Toast.LENGTH_LONG).show()
+    }
+}
+
+fun downloadVideo(video: Video, context: Context) {
+    val uri = video.getSourceUri()
     val request = DownloadManager.Request(uri)
     request.setDescription(video.title)
     request.setTitle(context.getString(R.string.app_name))
     request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
     request.allowScanningByMediaScanner()
-    request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_MOVIES, getFilename(uri))
+    request.setDestinationInExternalFilesDir(context, Environment.DIRECTORY_MOVIES, video.getLocalFilename())
 
     val manager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-    manager.enqueue(request)
+    val id = manager.enqueue(request)
+
+    Preferences.setVideoBeingDownloaded(video, id)
 
     EventBus.getDefault().post(VideoDownloadChangedEvent())
-}
-
-private fun getFilename(uri: Uri): String {
-    return uri.toString().substring(uri.toString().lastIndexOf('/') + 1, uri.toString().length)
-}
-
-fun videoFileDownloaded(context: Context, video: Video): Boolean {
-    return getTargetFile(context, video).exists()
 }
 
 fun videoFileBeingDownloaded(context: Context, video: Video) : Boolean {
@@ -73,17 +92,6 @@ fun videoFileBeingDownloaded(context: Context, video: Video) : Boolean {
     }
 
     Preferences.setVideoStoppedDownload(video)
-    return false;
+    return false
 }
 
-private fun getVideoUri(video: Video): Uri {
-    if (Preferences.getQuality() == Preferences.Companion.Quality.HD) {
-        return Uri.parse(video.downloadHdUrl)
-    } else {
-        return Uri.parse(video.downloadMobileUrl)
-    }
-}
-
-private fun getTargetFile(context: Context, video: Video): File {
-    return File(context.getExternalFilesDir(Environment.DIRECTORY_MOVIES), getFilename(getVideoUri(video)))
-}

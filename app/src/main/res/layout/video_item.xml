@@ -38,28 +38,33 @@
             android:layout_marginTop="@dimen/margin_half"
             android:drawableLeft="@drawable/ic_file_download_black_24dp"
             android:drawableStart="@drawable/ic_file_download_black_24dp"
+            android:paddingLeft="@dimen/margin_half"
+            android:paddingStart="@dimen/margin_half"
             android:text="@string/main_download"
             android:textSize="12sp"
-            android:gravity="start|center_vertical"
+            android:gravity="center"
             android:background="?android:attr/selectableItemBackground" />
 
         <LinearLayout
             android:id="@+id/downloadProgress"
             android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/margin_half"
             android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:paddingLeft="@dimen/margin_half"
+            android:paddingStart="@dimen/margin_half"
             android:layout_height="wrap_content">
 
             <ProgressBar
-
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginRight="@dimen/margin"/>
 
             <android.support.v7.widget.AppCompatTextView
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold"
                 android:textColor="@color/black"
+                android:textAllCaps="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/main_download_progress"

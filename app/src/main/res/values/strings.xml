@@ -1,10 +1,22 @@
 <resources>
     <string name="app_name">Fribos Dachboden</string>
 
+    <string name="generic_error">Fehler</string>
+    <string name="generic_ok">OK</string>
+    <string name="generic_yes">Ja</string>
+    <string name="generic_no">Nein</string>
+    <string name="generic_no_network_message">Kein Internet verfügbar.</string>
+
     <string name="main_download">Download</string>
     <string name="main_download_progress">Download läuft…</string>
+    <string name="main_play">Abspielen</string>
 
     <string name="menu_quality">Qualität wählen</string>
+    <string name="menu_download_lock">Download sperren</string>
+    <string name="menu_download_unlock">Download entsperren</string>
+
+    <string name="dialog_download_lock_message">Download sperren?</string>
+    <string name="dialog_download_unlock_message">Download entsperren?</string>
 
     <string name="dialog_quality_title">Video qualität</string>
     <string name="dialog_quality_message">In welcher qualität sollen die Videos heruntergeladen werden?\nMobile: ca. 100 MB\nHD: ca. 300 MB\npro Video.</string>
@@ -13,5 +25,12 @@
 
     <string name="dialog_quality_result_message_hd">Alle Videos die nun heruntergeladen werden sind in HD Qualität.</string>
     <string name="dialog_quality_result_message_mobile">Alle Videos die nun heruntergeladen werden sind in MOBILE Qualität.</string>
+
+    <string name="downloader_download_multiple_dialog_title">Anzahl wählen</string>
+    <string name="downloader_download_multiple_dialog_message">Wähle die Anzahl an Videos die heruntergeladen werden sollen.</string>
+    <string name="downloader_download_multiple_dialog_5">5</string>
+    <string name="downloader_download_multiple_dialog_10">10</string>
+
+    <string name="downloader_download_multiple_none_left">Alle Videos heruntergeladen</string>
 
 </resources>

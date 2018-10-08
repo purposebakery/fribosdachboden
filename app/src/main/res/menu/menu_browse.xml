@@ -5,6 +5,10 @@
     <item
         android:id="@+id/menu_quality_item"
         android:title="@string/menu_quality"
-        android:icon="@drawable/ic_high_quality_white_24dp"
+        app:showAsAction="collapseActionView" />
+
+    <item
+        android:id="@+id/menu_download_lock_item"
+        android:title="@string/menu_download_lock"
         app:showAsAction="collapseActionView" />
 </menu>
